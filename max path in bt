@@ -1,0 +1,23 @@
+#include <limits.h>
+
+#ifndef MAX
+#define MAX(a, b) ((a) > (b) ? (a) : (b))
+#endif
+
+int max_gain(struct TreeNode* node, int* max_sum) {
+    if (!node) return 0;
+
+    int left_gain = MAX(max_gain(node->left, max_sum), 0);
+    int right_gain = MAX(max_gain(node->right, max_sum), 0);
+
+    int current_path_sum = node->val + left_gain + right_gain;
+    *max_sum = MAX(*max_sum, current_path_sum);
+
+    return node->val + MAX(left_gain, right_gain);
+}
+
+int maxPathSum(struct TreeNode* root) {
+    int max_sum = INT_MIN;
+    max_gain(root, &max_sum);
+    return max_sum;
+}
