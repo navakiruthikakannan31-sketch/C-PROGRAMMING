@@ -1,0 +1,32 @@
+#include <stdio.h>
+#include <stdbool.h>
+
+void solve(int row, int n, int* count, bool* cols, bool* diag1, bool* diag2) {
+    if (row == n) {
+        (*count)++;
+        return;
+    }
+
+    for (int col = 0; col < n; col++) {
+        // diag1: row - col is constant for anti-diagonals (offset by n to avoid negative)
+        // diag2: row + col is constant for main diagonals
+        int d1 = row - col + n;
+        int d2 = row + col;
+
+        if (!cols[col] && !diag1[d1] && !diag2[d2]) {
+            cols[col] = diag1[d1] = diag2[d2] = true;
+            solve(row + 1, n, count, cols, diag1, diag2);
+            cols[col] = diag1[d1] = diag2[d2] = false; // Backtrack
+        }
+    }
+}
+
+int totalNQueens(int n) {
+    int count = 0;
+    bool cols[20] = {false};   // Column constraints
+    bool diag1[40] = {false};  // \ diagonal constraints
+    bool diag2[40] = {false};  // / diagonal constraints
+    
+    solve(0, n, &count, cols, diag1, diag2);
+    return count;
+}
