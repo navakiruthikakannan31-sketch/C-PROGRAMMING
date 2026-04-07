@@ -1,0 +1,43 @@
+#include <stdlib.h>
+#include <ctype.h>
+
+int* diffWaysToCompute(char* expression, int* returnSize) {
+    int len = strlen(expression);
+    int* res = (int*)malloc(sizeof(int) * 10000);
+    int count = 0;
+    int is_num = 1;
+
+    for (int i = 0; i < len; i++) {
+        char c = expression[i];
+        if (c == '+' || c == '-' || c == '*') {
+            is_num = 0;
+            int leftSize, rightSize;
+            
+            char leftPart[21], rightPart[21];
+            strncpy(leftPart, expression, i);
+            leftPart[i] = '\0';
+            strcpy(rightPart, expression + i + 1);
+
+            int* leftRes = diffWaysToCompute(leftPart, &leftSize);
+            int* rightRes = diffWaysToCompute(rightPart, &rightSize);
+
+            for (int l = 0; l < leftSize; l++) {
+                for (int r = 0; r < rightSize; r++) {
+                    if (c == '+') res[count++] = leftRes[l] + rightRes[r];
+                    else if (c == '-') res[count++] = leftRes[l] - rightRes[r];
+                    else if (c == '*') res[count++] = leftRes[l] * rightRes[r];
+                }
+            }
+            free(leftRes);
+            free(rightRes);
+        }
+    }
+
+    if (is_num) {
+        res[count++] = atoi(expression);
+    }
+
+    *returnSize = count;
+    return res;
+}
+
