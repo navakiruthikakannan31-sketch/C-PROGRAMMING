@@ -1,0 +1,50 @@
+#include <stdio.h>
+
+#define MOD 1000000007
+
+// Function to calculate parity of set bits (1 if odd, 0 if even)
+int get_parity(long long n) {
+    int count = 0;
+    while (n > 0) {
+        n &= (n - 1);
+        count++;
+    }
+    return count % 2;
+}
+
+void solve() {
+    int N;
+    if (scanf("%d", &N) != 1) return;
+
+    long long prefix_xor = 0;
+    long long even_sum = 1; // DP[0] = 1, and popcount(P0=0) is even (0 bits)
+    long long odd_sum = 0;
+    long long current_dp = 0;
+
+    for (int i = 0; i < N; i++) {
+        long long a;
+        scanf("%lld", &a);
+        prefix_xor ^= a;
+
+        if (get_parity(prefix_xor) == 0) {
+            // P[i] is even, so we need P[j] to be odd
+            current_dp = odd_sum;
+            even_sum = (even_sum + current_dp) % MOD;
+        } else {
+            // P[i] is odd, so we need P[j] to be even
+            current_dp = even_sum;
+            odd_sum = (odd_sum + current_dp) % MOD;
+        }
+    }
+
+    printf("%lld\n", current_dp);
+}
+
+int main() {
+    int T;
+    if (scanf("%d", &T) != 1) return 0;
+    while (T--) {
+        solve();
+    }
+    return 0;
+}
