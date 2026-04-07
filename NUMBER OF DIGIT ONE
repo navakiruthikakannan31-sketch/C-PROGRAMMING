@@ -1,0 +1,10 @@
+int countDigitOne(int n) {
+    long long count = 0;
+    for (long long i = 1; i <= n; i *= 10) {
+        long long divider = i * 10;
+        count += (n / divider) * i + 
+                 (n % divider < i ? 0 : 
+                 (n % divider > 2 * i - 1 ? i : n % divider - i + 1));
+    }
+    return (int)count;
+}
