@@ -1,0 +1,50 @@
+#include <stdlib.h>
+#include <string.h>
+#include <stdbool.h>
+
+char*** solveNQueens(int n, int* returnSize, int** returnColumnSizes);
+
+void solve(int row, int n, int* cols, bool* col_used, bool* diag1, bool* diag2, char*** res, int* count) {
+    if (row == n) {
+        res[*count] = (char**)malloc(n * sizeof(char*));
+        for (int i = 0; i < n; i++) {
+            res[*count][i] = (char*)malloc((n + 1) * sizeof(char));
+            for (int j = 0; j < n; j++) {
+                res[*count][i][j] = (cols[i] == j) ? 'Q' : '.';
+            }
+            res[*count][i][n] = '\0';
+        }
+        (*count)++;
+        return;
+    }
+
+    for (int c = 0; c < n; c++) {
+        if (!col_used[c] && !diag1[row + c] && !diag2[row - c + n - 1]) {
+            cols[row] = c;
+            col_used[c] = diag1[row + c] = diag2[row - c + n - 1] = true;
+            solve(row + 1, n, cols, col_used, diag1, diag2, res, count);
+            col_used[c] = diag1[row + c] = diag2[row - c + n - 1] = false;
+        }
+    }
+}
+
+char*** solveNQueens(int n, int* returnSize, int** returnColumnSizes) {
+    char*** res = (char***)malloc(1000 * sizeof(char**));
+    int* cols = (int*)malloc(n * sizeof(int));
+    bool* col_used = (bool*)calloc(n, sizeof(bool));
+    bool* diag1 = (bool*)calloc(2 * n, sizeof(bool));
+    bool* diag2 = (bool*)calloc(2 * n, sizeof(bool));
+    *returnSize = 0;
+
+    solve(0, n, cols, col_used, diag1, diag2, res, returnSize);
+
+    *returnColumnSizes = (int*)malloc(*returnSize * sizeof(int));
+    for (int i = 0; i < *returnSize; i++) (*returnColumnSizes)[i] = n;
+
+    free(cols);
+    free(col_used);
+    free(diag1);
+    free(diag2);
+    return res;
+}
+
